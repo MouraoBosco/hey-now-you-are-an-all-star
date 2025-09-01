@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -121,7 +122,6 @@
 
 
 /* Estilos personalizados para o jogo indie */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 .pixel-font {
   font-family: 'Press Start 2P', monospace;

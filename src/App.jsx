@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Star, Moon, Sparkles, Download, Github, Twitter } from 'lucide-react';
 import './App.css';
-import pixelBackground from './assets/pixel_art_background.png';
+import pixelBackground from './assets/pixel_art_background_with_girl.png';
 
 const StarfallValley = () => {
   const [stars, setStars] = useState([]);
@@ -137,33 +137,7 @@ const StarfallValley = () => {
 
       {/* Conteúdo principal */}
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
-        {/* Logo/Título */}
-        <motion.div
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mb-8"
-        >
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-4 pixel-font tracking-wider">
-            <span className="inline-block">
-              <Sparkles className="inline-block w-12 h-12 md:w-16 md:h-16 mr-4 text-yellow-300" />
-            </span>
-            STARFALL
-          </h1>
-          <h2 className="text-3xl md:text-5xl font-semibold text-blue-200 pixel-font tracking-wide">
-            VALLEY
-          </h2>
-        </motion.div>
 
-        {/* Subtítulo */}
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-          className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl leading-relaxed"
-        >
-          Uma jornada mágica através de vales estrelados onde cada passo revela novos mistérios
-        </motion.p>
 
         {/* Botões de ação */}
         <motion.div
@@ -197,67 +171,9 @@ const StarfallValley = () => {
           </motion.button>
         </motion.div>
 
-        {/* Características do jogo */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 2 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl"
-        >
-          {[
-            {
-              icon: <Star className="w-8 h-8 text-yellow-400" />,
-              title: "Pixel Art Detalhado",
-              description: "Gráficos artesanais inspirados nos clássicos 16-bit"
-            },
-            {
-              icon: <Moon className="w-8 h-8 text-blue-300" />,
-              title: "Atmosfera Noturna",
-              description: "Explore paisagens místicas sob céus estrelados"
-            },
-            {
-              icon: <Sparkles className="w-8 h-8 text-purple-400" />,
-              title: "Magia & Mistério",
-              description: "Descubra segredos ocultos em cada vale"
-            }
-          ].map((feature, index) => (
-            <motion.div
-              key={index}
-              className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20"
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.15)' }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-300">{feature.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
 
-        {/* Links sociais */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2.5 }}
-          className="flex gap-6 mt-16"
-        >
-          {[
-            { icon: <Github className="w-6 h-6" />, label: "GitHub" },
-            { icon: <Twitter className="w-6 h-6" />, label: "Twitter" }
-          ].map((social, index) => (
-            <motion.a
-              key={index}
-              href="#"
-              className="p-3 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 text-white hover:bg-white/20 transition-all duration-300"
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              {social.icon}
-            </motion.a>
-          ))}
-        </motion.div>
+
+
       </div>
 
       {/* Efeito de partículas flutuantes */}
