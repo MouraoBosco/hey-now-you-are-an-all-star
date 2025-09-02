@@ -1,206 +1,217 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Star, Moon, Sparkles, Download, Github, Twitter } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import * as PIXI from 'pixi.js';
 import './App.css';
-import pixelBackground from './assets/pixel_art_background_with_girl.png';
+
+// Import dos sprites
+import pixelBackground from './assets/pixel_art_background.png';
+import girlIdle from './assets/girl_idle.png';
+import girlSittingUp from './assets/girl_sitting_up.png';
+import girlSitting from './assets/girl_sitting.png';
+import girlReading from './assets/girl_reading.png';
 
 const StarfallValley = () => {
-  const [stars, setStars] = useState([]);
-  const [shootingStars, setShootingStars] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const pixiContainer = useRef(null);
+  const appRef = useRef(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showNotebook, setShowNotebook] = useState(false);
+  const [notebookPage, setNotebookPage] = useState(0);
 
-  // Gerar estrelas aleatórias
+  const notebookTexts = [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt."
+  ];
+
   useEffect(() => {
-    const generateStars = () => {
-      const newStars = [];
-      for (let i = 0; i < 50; i++) {
-        newStars.push({
-          id: i,
-          x: Math.random() * 100,
-          y: Math.random() * 60,
-          size: Math.random() * 3 + 1,
-          opacity: Math.random() * 0.8 + 0.2,
-          twinkleDelay: Math.random() * 3
+    const initApp = async () => {
+      try {
+        // Criar aplicação PIXI
+        const app = new PIXI.Application();
+        await app.init({
+          width: window.innerWidth,
+          height: window.innerHeight,
+          backgroundColor: 0x1a1a2e,
+          resizeTo: window
         });
+
+        appRef.current = app;
+        if (pixiContainer.current) {
+          pixiContainer.current.appendChild(app.canvas);
+        }
+
+        // Container principal
+        const mainContainer = new PIXI.Container();
+        app.stage.addChild(mainContainer);
+
+        // Carregar texturas
+        const backgroundTexture = await PIXI.Assets.load(pixelBackground);
+        const background = new PIXI.Sprite(backgroundTexture);
+        background.width = app.screen.width;
+        background.height = app.screen.height;
+        mainContainer.addChild(background);
+
+        // Sprites da garota
+        const girlIdleTexture = await PIXI.Assets.load(girlIdle);
+        const girlSittingUpTexture = await PIXI.Assets.load(girlSittingUp);
+        const girlSittingTexture = await PIXI.Assets.load(girlSitting);
+        const girlReadingTexture = await PIXI.Assets.load(girlReading);
+
+        // Sprite da garota (posicionado no centro-inferior)
+        const girlSprite = new PIXI.Sprite(girlIdleTexture);
+        girlSprite.anchor.set(0.5, 1);
+        girlSprite.x = app.screen.width * 0.5;
+        girlSprite.y = app.screen.height * 0.8;
+        girlSprite.scale.set(2);
+        mainContainer.addChild(girlSprite);
+
+        // Estrelas cintilantes
+        const stars = [];
+        for (let i = 0; i < 50; i++) {
+          const star = new PIXI.Graphics();
+          star.beginFill(0xffffff);
+          star.drawCircle(0, 0, Math.random() * 2 + 1);
+          star.endFill();
+          star.x = Math.random() * app.screen.width;
+          star.y = Math.random() * app.screen.height * 0.6;
+          star.alpha = Math.random() * 0.8 + 0.2;
+          mainContainer.addChild(star);
+          stars.push(star);
+        }
+
+        // Animação das estrelas
+        app.ticker.add(() => {
+          stars.forEach((star, index) => {
+            star.alpha = 0.2 + Math.sin(Date.now() * 0.001 + index) * 0.3;
+          });
+        });
+
+        // Função para criar estrelas cadentes
+        const createShootingStar = () => {
+          const shootingStar = new PIXI.Graphics();
+          shootingStar.beginFill(0xffffff);
+          shootingStar.drawCircle(0, 0, 2);
+          shootingStar.endFill();
+          shootingStar.x = Math.random() * app.screen.width;
+          shootingStar.y = Math.random() * app.screen.height * 0.3;
+          
+          const trail = new PIXI.Graphics();
+          trail.lineStyle(2, 0xffffff, 0.5);
+          trail.moveTo(0, 0);
+          trail.lineTo(-20, -10);
+          shootingStar.addChild(trail);
+          
+          mainContainer.addChild(shootingStar);
+
+          // Animação da estrela cadente
+          const speed = 3 + Math.random() * 2;
+          const angle = Math.PI / 4 + Math.random() * Math.PI / 4;
+          
+          const animate = () => {
+            shootingStar.x += Math.cos(angle) * speed;
+            shootingStar.y += Math.sin(angle) * speed;
+            shootingStar.alpha -= 0.01;
+            
+            if (shootingStar.alpha <= 0 || shootingStar.x > app.screen.width || shootingStar.y > app.screen.height) {
+              mainContainer.removeChild(shootingStar);
+            } else {
+              requestAnimationFrame(animate);
+            }
+          };
+          animate();
+        };
+
+        // Criar estrelas cadentes periodicamente
+        setInterval(createShootingStar, 3000 + Math.random() * 5000);
+
+        // Botão de interação
+        const button = new PIXI.Graphics();
+        button.beginFill(0x6b46c1);
+        button.drawRoundedRect(0, 0, 200, 50, 10);
+        button.endFill();
+        button.x = app.screen.width / 2 - 100;
+        button.y = app.screen.height - 100;
+        button.interactive = true;
+        button.cursor = 'pointer';
+        
+        const buttonText = new PIXI.Text('Levantar e Ler', {
+          fontFamily: 'Arial',
+          fontSize: 16,
+          fill: 0xffffff,
+          align: 'center'
+        });
+        buttonText.anchor.set(0.5);
+        buttonText.x = 100;
+        buttonText.y = 25;
+        button.addChild(buttonText);
+        
+        mainContainer.addChild(button);
+
+        // Animação stop-motion
+        const animateGirl = async () => {
+          if (isAnimating) return;
+          setIsAnimating(true);
+          
+          // Sequência de sprites
+          const sprites = [girlIdleTexture, girlSittingUpTexture, girlSittingTexture, girlReadingTexture];
+          
+          for (let i = 0; i < sprites.length; i++) {
+            girlSprite.texture = sprites[i];
+            await new Promise(resolve => setTimeout(resolve, 800));
+          }
+          
+          // Remover botão e mostrar overlay do caderno
+          mainContainer.removeChild(button);
+          setShowNotebook(true);
+          setIsAnimating(false);
+        };
+
+        button.on('pointerdown', animateGirl);
+
+      } catch (error) {
+        console.error('Erro ao inicializar PixiJS:', error);
       }
-      setStars(newStars);
     };
 
-    generateStars();
+    initApp();
+
+    // Cleanup
+    return () => {
+      if (appRef.current) {
+        appRef.current.destroy(true);
+      }
+    };
   }, []);
 
-  // Gerar estrelas cadentes periodicamente
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newShootingStar = {
-        id: Date.now(),
-        startX: Math.random() * 100,
-        startY: Math.random() * 30,
-        endX: Math.random() * 100,
-        endY: Math.random() * 30 + 40,
-        duration: Math.random() * 2 + 1
-      };
-      
-      setShootingStars(prev => [...prev, newShootingStar]);
-      
-      setTimeout(() => {
-        setShootingStars(prev => prev.filter(star => star.id !== newShootingStar.id));
-      }, newShootingStar.duration * 1000);
-    }, 3000 + Math.random() * 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePlayClick = () => {
-    setIsPlaying(true);
-    setTimeout(() => setIsPlaying(false), 2000);
+  const nextPage = () => {
+    setNotebookPage((prev) => (prev + 1) % notebookTexts.length);
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-900 via-blue-900 to-purple-900">
-      {/* Fundo de pixel art com parallax */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${pixelBackground})`,
-            filter: 'contrast(1.1) saturate(1.2)'
-          }}
-          animate={{
-            backgroundPosition: ['0% 0%', '2% 1%', '0% 0%']
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        {/* Overlay para melhor contraste */}
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
-
-      {/* Estrelas cintilantes */}
-      <div className="absolute inset-0">
-        {stars.map((star) => (
-          <motion.div
-            key={star.id}
-            className="absolute w-1 h-1 bg-white rounded-full"
-            style={{
-              left: `${star.x}%`,
-              top: `${star.y}%`,
-              width: `${star.size}px`,
-              height: `${star.size}px`
-            }}
-            animate={{
-              opacity: [star.opacity, star.opacity * 0.3, star.opacity]
-            }}
-            transition={{
-              duration: 2 + Math.random() * 2,
-              repeat: Infinity,
-              delay: star.twinkleDelay,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Estrelas cadentes */}
-      <AnimatePresence>
-        {shootingStars.map((shootingStar) => (
-          <motion.div
-            key={shootingStar.id}
-            className="absolute w-1 h-1 bg-white rounded-full shadow-lg"
-            style={{
-              left: `${shootingStar.startX}%`,
-              top: `${shootingStar.startY}%`,
-              boxShadow: '0 0 6px #ffffff, 0 0 12px #ffffff'
-            }}
-            initial={{
-              x: 0,
-              y: 0,
-              opacity: 0
-            }}
-            animate={{
-              x: `${(shootingStar.endX - shootingStar.startX) * window.innerWidth / 100}px`,
-              y: `${(shootingStar.endY - shootingStar.startY) * window.innerHeight / 100}px`,
-              opacity: [0, 1, 1, 0]
-            }}
-            transition={{
-              duration: shootingStar.duration,
-              ease: "easeOut"
-            }}
-            exit={{ opacity: 0 }}
-          />
-        ))}
-      </AnimatePresence>
-
-      {/* Conteúdo principal */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 text-center">
-
-
-        {/* Botões de ação */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.5 }}
-          className="flex flex-col sm:flex-row gap-6 mb-16"
-        >
-          <motion.button
-            onClick={handlePlayClick}
-            className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center justify-center gap-3">
-              <Play className="w-6 h-6" />
-              {isPlaying ? 'Carregando...' : 'Jogar Agora'}
+    <div className="relative w-full h-screen overflow-hidden">
+      <div ref={pixiContainer} className="w-full h-full" />
+      
+      {/* Overlay do caderno */}
+      {showNotebook && (
+        <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
+          <div className="bg-yellow-100 p-8 rounded-lg max-w-md mx-4 relative">
+            <div className="text-gray-800 text-sm leading-relaxed mb-4">
+              {notebookTexts[notebookPage]}
             </div>
-          </motion.button>
-
-          <motion.button
-            className="group px-8 py-4 border-2 border-white/30 text-white font-bold text-lg rounded-lg hover:bg-white/10 transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <div className="flex items-center justify-center gap-3">
-              <Download className="w-6 h-6" />
-              Download
+            <button
+              onClick={nextPage}
+              className="absolute bottom-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
+            >
+              ⮞
+            </button>
+            <div className="absolute top-4 right-4 text-xs text-gray-500">
+              {notebookPage + 1} / {notebookTexts.length}
             </div>
-          </motion.button>
-        </motion.div>
-
-
-
-
-      </div>
-
-      {/* Efeito de partículas flutuantes */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-white/30 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`
-            }}
-            animate={{
-              y: [-20, -100],
-              opacity: [0, 1, 0]
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "easeOut"
-            }}
-          />
-        ))}
-      </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default StarfallValley;
+
