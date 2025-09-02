@@ -5,9 +5,8 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/hey-now-you-are-an-all-star/',
-  plugins: [react(),tailwindcss()],
-  server: {
+  base: './',
+  plugins: [react(),tailwindcss()],  server: {
     host: true,
     port: 5175,
     strictPort: true,
