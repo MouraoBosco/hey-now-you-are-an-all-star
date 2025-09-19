@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://MouraoBosco.github.io/hey-now-you-are-an-all-star",
+
   "scripts": {
     "dev": "vite",
     "build": "vite build",
