@@ -1,0 +1,116 @@
+/* Estilos CSS para o corpo da página */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+/* Est para o contêiner principal */
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("starry-night-scene.png");
+    background-size: cover;
+    background-position: center;
+}
+
+/* Est para as estrelas */
+.star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 2s infinite;
+}
+
+/* Animação de cintilar */
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Est para a estrela cadente */
+.shooting-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #fff;
+    animation: fall 3s linear infinite;
+}
+
+/* Animação de queda */
+@keyframes fall {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(-200px, 200px); opacity: 0; }
+}
+
+/* Est para a grama */
+.grass {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 20%;
+    background: #0e4202;
+    animation: wind 5s infinite;
+}
+
+/* Animação de vento */
+@keyframes wind {
+    0%, 100% { transform: skewX(0deg); }
+    50% { transform: skewX(5deg); }
+}
+
+/* Est para o botão de play */
+#play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px 30px;
+    font-size: 24px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+/* Est para o overlay de fade */
+.fade-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: 0;
+    transition: opacity 1s;
+    pointer-events: none;
+}
+
+/* Est para o emoticon */
+.emoticon {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 50%;
+    height: auto;
+    transition: transform 0.5s;
+}
+
+
+
+
+/* Estilos para a imagem da garota */
+#girl-image {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    max-height: 80%;
+    width: auto;
+    z-index: 1;
+}
+
+
