@@ -234,3 +234,28 @@
   100% { background-position: 0% 50%; }
 }
 
+
+
+/* Animação de vento na grama */
+@keyframes grass-sway {
+  0% { transform: rotateZ(0deg); }
+  50% { transform: rotateZ(1deg); }
+  100% { transform: rotateZ(0deg); }
+}
+
+.grass-animation {
+  animation: grass-sway 4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Animação de cintilar para estrelas */
+@keyframes star-twinkle-new {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.star-twinkle-animation {
+  animation: star-twinkle-new 2s ease-in-out infinite;
+}
+
+

@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Star, Moon, Sparkles, Download, Github, Twitter } from 'lucide-react';
 import './App.css';
-import pixelBackground from './assets/pixel_art_background_with_girl.png';
+import starryNightScene from '../public/starry-night-scene.png';
+import thumbsUpEmoji from '../public/thumbs-up-emoji.png';
 
 const StarfallValley = () => {
   const [stars, setStars] = useState([]);
   const [shootingStars, setShootingStars] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showEmoticon, setShowEmoticon] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   // Gerar estrelas aleatórias
   useEffect(() => {
@@ -52,8 +55,17 @@ const StarfallValley = () => {
   }, []);
 
   const handlePlayClick = () => {
+    console.log('Play button clicked!');
     setIsPlaying(true);
-    setTimeout(() => setIsPlaying(false), 2000);
+    setFadeOut(true);
+    setShowEmoticon(true);
+    
+    // Após 3 segundos, esconder o emoticon e voltar ao normal
+    setTimeout(() => {
+      setShowEmoticon(false);
+      setFadeOut(false);
+      setIsPlaying(false);
+    }, 3000);
   };
 
   return (
@@ -63,7 +75,7 @@ const StarfallValley = () => {
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${pixelBackground})`,
+            backgroundImage: `url(${starryNightScene})`,
             filter: 'contrast(1.1) saturate(1.2)'
           }}
           animate={{
@@ -78,6 +90,22 @@ const StarfallValley = () => {
         
         {/* Overlay para melhor contraste */}
         <div className="absolute inset-0 bg-black/20" />
+
+        {/* Imagem da garota */}
+        <motion.img
+          src={starryNightScene}
+          alt="Garota olhando as estrelas"
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-auto w-full object-cover object-bottom"
+          style={{ maxHeight: '80%', width: 'auto' }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
+        />
+
+        {/* Grama com animação de vento (simulada) */}
+        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-transparent overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-green-700 opacity-0 grass-animation" style={{ transformOrigin: 'bottom center' }}></div>
+        </div>
       </div>
 
       {/* Estrelas cintilantes */}
@@ -85,7 +113,7 @@ const StarfallValley = () => {
         {stars.map((star) => (
           <motion.div
             key={star.id}
-            className="absolute w-1 h-1 bg-white rounded-full"
+            className="absolute w-1 h-1 bg-white rounded-full star-twinkle-animation"
             style={{
               left: `${star.x}%`,
               top: `${star.y}%`,
@@ -122,8 +150,8 @@ const StarfallValley = () => {
               opacity: 0
             }}
             animate={{
-              x: `${(shootingStar.endX - shootingStar.startX) * window.innerWidth / 100}px`,
-              y: `${(shootingStar.endY - shootingStar.startY) * window.innerHeight / 100}px`,
+              x: [0, (shootingStar.endX - shootingStar.startX) * window.innerWidth / 100],
+              y: [0, (shootingStar.endY - shootingStar.startY) * window.innerHeight / 100],
               opacity: [0, 1, 1, 0]
             }}
             transition={{
@@ -199,6 +227,47 @@ const StarfallValley = () => {
           />
         ))}
       </div>
+
+      {/* Overlay de fade quando o botão play é clicado */}
+      <AnimatePresence>
+        {fadeOut && (
+          <motion.div
+            className="fixed inset-0 bg-black z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.8 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Emoticon que aparece após o fade */}
+      <AnimatePresence>
+        {showEmoticon && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center z-50"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <motion.img
+              src={thumbsUpEmoji}
+              alt="Thumbs up emoji"
+              className="w-64 h-64 md:w-80 md:h-80"
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ 
+                duration: 1,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
