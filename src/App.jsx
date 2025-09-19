@@ -75,7 +75,7 @@ const StarfallValley = () => {
         <motion.div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${starryNightScene})`,
+            backgroundImage: `url(${import.meta.env.BASE_URL}starry-night-scene.png)`,
             filter: 'contrast(1.1) saturate(1.2)'
           }}
           animate={{
@@ -93,7 +93,7 @@ const StarfallValley = () => {
 
         {/* Imagem da garota */}
         <motion.img
-          src={starryNightScene}
+          src={`${import.meta.env.BASE_URL}starry-night-scene.png`}
           alt="Garota olhando as estrelas"
           className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-auto w-full object-cover object-bottom"
           style={{ maxHeight: '80%', width: 'auto' }}
@@ -252,7 +252,7 @@ const StarfallValley = () => {
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <motion.img
-              src={thumbsUpEmoji}
+              src={`${import.meta.env.BASE_URL}thumbs-up-emoji.png`}
               alt="Thumbs up emoji"
               className="w-64 h-64 md:w-80 md:h-80"
               animate={{ 
